@@ -1,12 +1,15 @@
+[all]
+localhost       ansible_connection=local node_network_interface=eth0
+
 [docker-master]
 
 [docker-node]
 
 [containerd-master]
-localhost       ansible_connection=local
+localhost
 
 [containerd-node]
-localhost       ansible_connection=local
+localhost
 
 [kube-master:children]
 docker-master
@@ -17,7 +20,7 @@ docker-node
 containerd-node
 
 [storage]
-localhost       ansible_connection=local
+localhost
 
 [baremetal:children]
 kube-master

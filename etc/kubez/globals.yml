@@ -5,14 +5,14 @@
 # Enable an high availability kubernetes cluster.
 #enable_kubernetes_ha: "no"
 
-kube_release: 1.23.6
+kube_release: 1.28.0
 
 cluster_cidr: "172.30.0.0/16"
 service_cidr: "10.254.0.0/16"
 
 #Network interface is optional, the default value
 #is eth0.
-network_interface: "eth0"
+#network_interface: "eth0"
 
 # This should be a VIP, an unused IP on your network that will float between
 # the hosts running keepalived for high-availability.
@@ -23,47 +23,47 @@ network_interface: "eth0"
 #enable_haproxy: "no"
 
 # Listen port for kubernetes.
-# 启用 haproxy + keepalived 时, 监听端口推荐使用 8443
+# When enabling HAProxy + keepalived, it is recommended to use port 8443
 #kube_vip_port: 6443
 
 # Kubernetes network cni options
 #enable_calico: "no"
 
-# kubernetes 镜像仓库地址，默认阿里云，用户可根据实际情况配置
-# 可使用 pixiu 社区镜像仓库：docker.io/pixiuio
-image_repository: "registry.cn-hangzhou.aliyuncs.com/google_containers"
+# kubernetes image repository address, default is Aliyun, users can configure according to actual situation
+# you can use the Pixiu community image repository: docker.io/pixiuio
+image_repository: "registry.k8s.io"
 
-# 自定义镜像仓库
+# Custom image repository
 app_image_repository: "harbor.cloud.pixiuio.com/pixiuio"
 
-# 自定义 REPO 仓库
+# Custom REPO repository
 repo_dir: "/etc/kubez/repo"
 
 ###############
 # Host Options
 ###############
-# 自动重置节点的 hostname
-# Rocky 系统不生效
+# Automatically reset the hostname of the node
+# Does not take effect on Rocky systems
 #set_hostname: "yes"
 
 ##################
 # Runtime Options
 ##################
 # runtime docker version
-# 通过 apt-cache madison docker-ce 查找合适版本
+# Find the appropriate version using apt-cache madison docker-ce
 docker_release: ""
-# runtime containerd version
+# Runtime containerd version
 containerd_release: ""
 
-# 自定义 docker 数据存放目录
+# Custom Docker data storage directory
 docker_data_dir: "{{ runtime_data_dir }}"
-# 自定义 containerd 数据存放目录
+# Custom containerd data storage directory
 containerd_data_dir: "{{ runtime_data_dir }}"
 
 ####################
-# kubernetes(1.24.0+) 使用 runtime 为 docker
+# Kubernetes (1.24.0+) uses runtime as Docker
 ####################
-# cir-dockerd 的二进制文件镜像
+# Binary file image of cir-dockerd
 #cri_dockerd_image: "harbor.cloud.pixiuio.com/pixiuio/cri-dockerd:v0.3.10"
 
 #####################
@@ -82,7 +82,7 @@ containerd_data_dir: "{{ runtime_data_dir }}"
 #dashboard_namespace: "{{ kubez_namespace }}"
 #dashboard_vip_address: ""
 
-# helm 仓库配置项, 默认为 pixiu helm chart 仓库
+# Helm repository configuration, default is the Pixiu helm chart repository
 #dashboard_repo_name: "{{ default_repo_name }}"
 #dashboard_repo_url: "{{ default_repo_url }}"
 #dashboard_path: pixiuio/kubernetes-dashboard
@@ -128,11 +128,11 @@ containerd_data_dir: "{{ runtime_data_dir }}"
 
 #minio_storage_class: managed-nfs-storage
 #minio_storage_size: 500Gi
-# 生产环境推荐 16Gi
+# Recommended for production environment: 16Gi
 #minio_memory_size: 4Gi
 
 # applicable only for MinIO distributed mod
-# 生产环境推荐 16
+# recommended for production environment: 16
 #minio_replicas: 4
 #minio_rootUser: minioadmin
 #minio_rootPassword: minioadmin
@@ -143,18 +143,18 @@ containerd_data_dir: "{{ runtime_data_dir }}"
 #enable_prometheus: "no"
 #prometheus_namespace: "{{ kubez_namespace }}"
 
-# 是否开启 prometheus-server 的持久化存储，默认为开启
-# 必须是 'true' or 'false'，否则会被 helm_toolbox 模块忽略
+# Whether to enable persistent storage for prometheus-server, default is enabled
+#Must be 'true' or 'false', otherwise it will be ignored by the helm_toolbox module
 #enable_prometheus_server_storage: 'true'
 #prometheus_server_storage_class: managed-nfs-storage
 #prometheus_server_persistent_volume_size: 8Gi
 
-# 是否开启 prometheus-alertmanager ，默认为开启
-# 必须是 'true' or 'false'，否则会被 helm_toolbox 模块忽略
+# Whether to enable prometheus-alertmanager, default is enabled
+# Must be 'true' or 'false', otherwise it will be ignored by the helm_toolbox module
 #enable_prometheus_alertmanager: 'true'
 #prometheus_alertmanager_persistent_volume_size: 2Gi
 
-# helm 仓库配置项, 默认为 pixiu helm chart 仓库
+# Helm repository configuration, default is the Pixiu helm chart repository
 #prometheus_repo_name: "{{ default_repo_name }}"
 #prometheus_repo_url: "{{ default_repo_url }}"
 #prometheus_path: pixiuio/prometheus
@@ -169,13 +169,13 @@ containerd_data_dir: "{{ runtime_data_dir }}"
 #grafana_admin_user: admin
 #grafana_admin_password: admin
 
-# 是否开启 grafana 持久化存储，默认为开启
-#必须是 'true' or 'false'，否则会被 helm_toolbox 模块忽略
+# Whether to enable Grafana persistent storage, default is enabled
+# Must be 'true' or 'false', otherwise it will be ignored by the helm_toolbox module
 #enable_grafana_persistent_volume: 'true'
-#grafana_storage_class: managed-nfs-storag
+#grafana_storage_class: managed-nfs-storage
 #grafana_persistence_size: 10Gi
 
-# helm 仓库配置项
+# Helm repository configuration
 #grafana_repo_name: "{{ default_repo_name }}"
 #grafana_repo_url: "{{ default_repo_url }}"
 #grafana_path: pixiuio/grafana
@@ -213,7 +213,7 @@ s3:
   s3ForcePathStyle: true
   insecure: true
 
-# helm 仓库配置项
+# helm repository configuration
 #loki_repo_name: "{{ default_repo_name }}"
 #loki_repo_url: "{{ default_repo_url }}"
 #loki_path: pixiuio/loki
@@ -228,20 +228,20 @@ s3:
 # Loki server url for push
 #loki_url: http://loki-gateway/loki/api/v1/push
 
-# helm 仓库配置项
+# helm repository configuration
 #promtail_repo_name: "{{ default_repo_name }}"
 #promtail_repo_url: "{{ default_repo_url }}"
 #promtail_path: pixiuio/promtail
 #promtail_version: 6.15.4
 
 #################
-# Loggie Options
+# hoggie Options
 #################
 #enable_loggie: "no"
 #loggie_namespace: "{{ kubez_namespace }}"
 
 #loggie_loki_url: http://loki-gateway/loki/api/v1/push
-# helm 仓库配置项
+# helm repository configuration
 #loggie_repo_name: "{{ default_repo_name }}"
 #loggie_repo_url: "{{ default_repo_url }}"
 #loggie_path: pixiuio/loggie
@@ -258,23 +258,24 @@ s3:
 ###############
 #enable_helm: "yes"
 
-# v3.5.2 and v3.9.0 is available, default is v3.9.0
+# v3.5.2 and v3.9.0 are available; default is v3.9.0
 #helm_release: v3.9.0
 #helm_image: "harbor.cloud.pixiuio.com/pixiuio/helm-toolbox:{{ helm_release }}"
 
 ########################
 # Elasticsearch Options
 ########################
-# The Fluentd, elasticsearch, and kibana will be installed when enabled.
+# The Fluentd, Elasticsearch, and Kibana will be installed when enabled.
 #enable_elasticsearch: "no"
 #elasticsearch_name: elasticsearch
 #elasticsearch_namespace: "{{ kubez_namespace }}"
 #elasticsearch_chart_version: 8.5.1
 
-# 生产环境推荐 3 副本
-#elasticsearch_replicas: 1
-# 生产环境至少为 2 节点
-#minimum_master_nodes: 1
+# Recommended for production environment
+#elasticsearch_replicas: 3
+# Production environment requires at least 2 nodes
+#minimum_master_nodes: 2
+
 
 ###################
 # Filebeat Options
@@ -322,7 +323,7 @@ s3:
 # The initial password for admin
 #initial_admin_password: admin123456
 
-# helm 仓库配置项, 默认为 pixiu helm chart 仓库
+# helm repository configuration item, defaults to Pixiu Helm chart repository
 #jenkins_repo_name: "{{ default_repo_name }}"
 #jenkins_repo_url: "{{ default_repo_url }}"
 #jenkins_path: pixiuio/jenkins
@@ -464,11 +465,11 @@ s3:
 # zookeeper
 ######################
 #enable_zookeeper: "no"
-# helm 配置
+# helm configuration
 #zookeeper_repository_name: "{{ default_repo_name }}"
 #zookeeper_repository_url: "{{ default_repo_url }}"
 #zookeeper_repository_path: "{{ default_repo_name }}/zookeeper"
-# zookeeper配置
+# zookeeper configuration
 #zookeeper_replicas: 1
 #zookeeper_requests_cpu: 1
 #zookeeper_requests_memory: "1Gi"
@@ -476,8 +477,9 @@ s3:
 #zookeeper_image_registry: "{{ app_image_repository }}"
 #zookeeper_image_repository: "zookeeper"
 #zookeeper_version: "11.4.9"
-# zookeeper持久化设置
+# zookeeper persistence settings
 #zookeeper_persistence_enabled: "false"
 #zookeeper_persistence_size: "8Gi"
 #zookeeper_persistence_storageclass: "{{ nfs_storage_class }}"
 #zookeeper_context_fsgroup: "0"
+

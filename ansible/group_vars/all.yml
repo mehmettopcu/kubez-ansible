@@ -2,32 +2,33 @@
 ########################
 # Kubez-ansible Options
 ########################
-network_interface: "eth0"
+node_network_interface: "eth0"
+network_interface: "{{ node_network_interface }}"
 api_interface: "{{ network_interface }}"
 api_interface_address: "{{ hostvars[inventory_hostname]['ansible_' + api_interface]['ipv4']['address'] }}"
 
-# kubernetes 镜像仓库地址，默认阿里云，用户可根据实际情况配置
-image_repository: "registry.cn-hangzhou.aliyuncs.com/google_containers"
+# Kubernetes image repository address, default is Alibaba Cloud. Users can configure it according to their actual situation.
+image_repository: "registry.k8s.io"
 
-# 自定义镜像仓库
+# Custom image repository
 app_image_repository: "harbor.cloud.pixiuio.com/pixiuio"
 
-# 自定义 REPO 仓库
+# Custom REPO directory
 repo_dir: "/etc/kubez/repo"
 
-# pixiu helm chart 仓库地址
+# Pixiu Helm chart repository address
 default_repo_name: "pixiuio"
 default_repo_url: "https://harbor.cloud.pixiuio.com/chartrepo/pixiuio"
 
 ###############
 # Host Options
 ###############
-# 自动重置节点的 hostname
-# Rocky 系统不生效
+# Automatically reset the node's hostname
+# Does not take effect on Rocky systems
 set_hostname: "yes"
 
 #####################
-# keepalived options
+# Keepalived options
 #####################
 # Arbitrary unique number from 0..255
 keepalived_virtual_router_id: "68"
@@ -39,11 +40,11 @@ kube_application_dir: "/tmp/pixiuspace"
 kubez_namespace: pixiu-system
 
 # This should be a VIP, an unused IP on your network that will float between
-# the hosts running keepalived for high-availability.
+# the hosts running keepalived for high availability.
 kube_vip_address: ""
 
-# Listen port for kubernetes.
-# 启用 haproxy + keepalived 时, 监听端口推荐使用 8443
+# Listen port for Kubernetes.
+# When using HAProxy + Keepalived, it is recommended to use port 8443
 kube_vip_port: 6443
 
 ingress_node_port: 30006
@@ -60,6 +61,7 @@ enable_calico: "no"
 enable_pixiu_localstorage: "no"
 
 enable_kubernetes: "yes"
+enable_pixiu_system: "yes"
 enable_kubernetes_ha: "no"
 enable_haproxy: "no"
 enable_metrics_server: "yes"
@@ -69,9 +71,9 @@ enable_ingress_nginx: "yes"
 kube_release: 1.23.6
 kubernetes_version: "v{{ kube_release }}"
 
-# 仓库版本拆分, 以 1.28 为分界版本
+# Repository version split, with 1.28 as the boundary version
 release_bump: "{{ kube_base_version | float >= 1.28 }}"
-# kubernetes 版本的前两个版本号, 对应阿里云仓库路径
+# The first two version numbers of Kubernetes, corresponding to the Alibaba Cloud repository path
 kube_base_version: "{{ kube_release.split('.')[0] }}.{{ kube_release.split('.')[1] }}"
 
 kube_release_ubuntu: "{{ kube_release ~ '-1.1' if release_bump else kube_release ~ '-00' }}"
@@ -80,7 +82,7 @@ kube_release_ubuntu: "{{ kube_release ~ '-1.1' if release_bump else kube_release
 # Runtime Options
 ##################
 # runtime docker version
-# 通过 apt-cache madison docker-ce 查找合适版本
+# Find a suitable version using `apt-cache madison docker-ce`
 docker_release: ""
 # runtime containerd version
 containerd_release: ""
@@ -103,7 +105,7 @@ containerd_package_debian: "containerd.io{{'' if containerd_release == '' else '
 docker_package_openEuler: "docker-ce{{'' if docker_release == '' else '-' ~ docker_release }}"
 containerd_package_openEuler: "containerd.io{{'' if containerd_release == '' else '-' ~ containerd_release }}"
 
-# cir-dockerd 的二进制文件镜像
+# Binary image for cri-dockerd
 cri_dockerd_image: "harbor.cloud.pixiuio.com/pixiuio/cri-dockerd:v0.3.10"
 
 node_config_directory: "/etc/kubez/"
@@ -116,9 +118,9 @@ control_labels:
 kube_repo: "{{ registry_repo if enable_registry | bool else image_repository }}"
 
 kube_applications:
-  # pixiu-system should exists before the other applications created
+  # pixiu-system should exist before the other applications are created
   - name: pixiu-system
-    enabled: "yes"
+    enabled: "{{ enable_pixiu_system | bool }}"
   - name: kube-flannel
     enabled: "{{ enable_flannel | bool }}"
   - name: kube-calico
@@ -133,7 +135,7 @@ kube_applications:
     enabled: "{{ enable_ingress_nginx | bool }}"
   - name: kubez-autoscaler
     enabled: "{{ enable_hpav2 | bool }}"
-    # TODO: 临时解决方案，最终可通过调用 preStart 的 webhook 解决
+    # TODO: Temporary solution, to be resolved via preStart webhook eventually
   - name: olm-crds
     enabled: "{{ enable_olm | bool }}"
   - name: olm
@@ -166,7 +168,7 @@ rbd_provisioner_image: "{{ rbd_provisioner_url }}/external_storage/rbd-provision
 ###############
 enable_helm: "yes"
 
-# v3.5.2 and v3.9.0 is available, default is v3.9.0
+# v3.5.2 and v3.9.0 are available, default is v3.9.0
 helm_release: v3.9.0
 helm_image: "harbor.cloud.pixiuio.com/pixiuio/helm-toolbox:{{ helm_release }}"
 
@@ -204,16 +206,16 @@ ceph_key: QVFCdzN6NWVGMjJCTFJBQVcvMkU2a051UW1JSHU1VTRXZ2ZEd3c9PQ==
 enable_prometheus: "no"
 prometheus_namespace: "{{ kubez_namespace }}"
 
-# 必须是 'true' or 'false'，否则会被 helm_toolbox 模块忽略
+# Must be 'true' or 'false', otherwise it will be ignored by the helm_toolbox module
 enable_prometheus_server_persistent_volume: 'true'
 prometheus_server_storage_class: managed-nfs-storage
 prometheus_server_persistent_volume_size: 8Gi
 
-# 必须是 'true' or 'false'，否则会被 helm_toolbox 模块忽略
+# Must be 'true' or 'false', otherwise it will be ignored by the helm_toolbox module
 enable_prometheus_alertmanager: 'true'
 prometheus_alertmanager_persistent_volume_size: 2Gi
 
-# helm 仓库配置项
+# Helm repository configuration
 prometheus_repo_name: "{{ default_repo_name }}"
 prometheus_repo_url: "{{ default_repo_url }}"
 prometheus_path: pixiuio/prometheus
@@ -222,7 +224,7 @@ prometheus_version: 25.10.0
 ###############
 # Minio Options
 ###############
-# https://github.com/minio/minio
+# [MinIO](https://github.com/minio/minio)
 enable_minio: "no"
 
 minio_name: minio
@@ -230,33 +232,33 @@ minio_namespace: "{{ kubez_namespace }}"
 
 minio_storage_class: managed-nfs-storage
 minio_storage_size: 500Gi
-# 生产环境推荐 16Gi
+# Recommended for production: 16Gi
 minio_memory_size: 4Gi
-# applicable only for MinIO distributed mod
-# 生产环境推荐 16
+# Applicable only for MinIO distributed mode
+# Recommended for production: 16
 minio_replicas: 4
 
-# 用户名和密码
+# Username and password
 minio_rootUser: minioadmin
 minio_rootPassword: minioadmin
 
 ######################
 # Kuberhealthy Options
 ######################
-# https://github.com/kuberhealthy/kuberhealthy
+# [Kuberhealthy](https://github.com/kuberhealthy/kuberhealthy)
 enable_kuberhealthy: "no"
 kuberhealthy_namespace: "{{ kubez_namespace }}"
 kuberhealthy_version: "104"
 
 ######################
-# zookeeper
+# Zookeeper Options
 ######################
 enable_zookeeper: "no"
-# helm 配置
+# Helm configuration
 zookeeper_repository_name: "{{ default_repo_name }}"
 zookeeper_repository_url: "{{ default_repo_url }}"
 zookeeper_repository_path: "{{ default_repo_name }}/zookeeper"
-# zookeeper配置
+# Zookeeper configuration
 zookeeper_replicas: 1
 zookeeper_requests_cpu: 1
 zookeeper_requests_memory: "1Gi"
@@ -264,7 +266,7 @@ zookeeper_namespace: "{{ kubez_namespace }}"
 zookeeper_image_registry: "{{ app_image_repository }}"
 zookeeper_image_repository: "zookeeper"
 zookeeper_version: "11.4.9"
-# zookeeper持久化设置
+# Zookeeper persistence settings
 zookeeper_persistence_enabled: "false"
 zookeeper_persistence_size: "8Gi"
 zookeeper_persistence_storageclass: "{{ nfs_storage_class }}"
@@ -273,7 +275,7 @@ zookeeper_context_fsgroup: "0"
 ####################
 # Chaos Mesh Options
 ####################
-# https://chaos-mesh.org/docs/production-installation-using-helm/
+# [Chaos Mesh](https://chaos-mesh.org/docs/production-installation-using-helm/)
 enable_chaos_mesh: "no"
 chaos_mesh_chart_version: "2.6.2"
 
@@ -288,16 +290,16 @@ runtime: docker
 enable_grafana: "no"
 grafana_namespace: "{{ kubez_namespace }}"
 
-# Customize grafana user and password
+# Customize Grafana user and password
 grafana_admin_user: admin
 grafana_admin_password: admin
 
-# 必须是 'true' or 'false'，否则会被 helm_toolbox 模块忽略
+# Must be 'true' or 'false', otherwise it will be ignored by the helm_toolbox module
 enable_grafana_persistent_volume: 'true'
 grafana_storage_class: managed-nfs-storage
 grafana_persistence_size: 10Gi
 
-# helm 仓库配置项
+# Helm repository configuration
 grafana_repo_name: "{{ default_repo_name }}"
 grafana_repo_url: "{{ default_repo_url }}"
 grafana_path: pixiuio/grafana
@@ -336,7 +338,7 @@ s3:
   s3ForcePathStyle: true
   insecure: true
 
-# helm 仓库配置项
+# Helm Repository Configuration
 loki_repo_name: "{{ default_repo_name }}"
 loki_repo_url: "{{ default_repo_url }}"
 loki_path: pixiuio/loki
@@ -348,7 +350,7 @@ loki_version: 5.41.8
 enable_promtail: "no"
 promtail_namespace: "{{ kubez_namespace }}"
 
-# helm 仓库配置项
+# Helm Repository Configuration
 promtail_repo_name: "{{ default_repo_name }}"
 promtail_repo_url: "{{ default_repo_url }}"
 promtail_path: pixiuio/promtail
@@ -365,7 +367,7 @@ loggie_namespace: "{{ kubez_namespace }}"
 
 loggie_loki_url: http://loki-gateway/loki/api/v1/push
 
-# helm 仓库配置项
+# Helm Repository Configuration
 loggie_repo_name: "{{ default_repo_name }}"
 loggie_repo_url: "{{ default_repo_url }}"
 loggie_path: pixiuio/loggie
@@ -442,13 +444,13 @@ jenkins_storage_size: "8Gi"
 # The initial password for admin
 initial_admin_password: "admin123456"
 
-# helm 仓库配置项
+# Helm Repository Configuration
 jenkins_repo_name: "{{ default_repo_name }}"
 jenkins_repo_url: "{{ default_repo_url }}"
 jenkins_path: pixiuio/jenkins
 jenkins_version: 4.12.0
 
-# TODO: 自定义 chart_extra_vars 和 chart_extra_flags
+# TODO: Custom chart_extra_vars and chart_extra_flags
 
 #################
 # Tekton Options
@@ -549,7 +551,7 @@ dashboard_namespace: "{{ kubez_namespace }}"
 dashboard_vip_address: ""
 dashboard_node_port: 30001
 
-# helm 仓库配置项
+# Helm Repository Configuration
 dashboard_repo_name: "{{ default_repo_name }}"
 dashboard_repo_url: "{{ default_repo_url }}"
 dashboards_path: pixiuio/kubernetes-dashboard
@@ -622,7 +624,7 @@ charts:
       path: "{{ prometheus_path }}"
       version: "{{ prometheus_version }}"
     chart_extra_vars:
-      server.persistentVolume.enabled: "{{ enable_prometheus_server_persistent_volume }}" # 必须是字符串格式，否则会被 helm_toolbox 模块忽略
+      server.persistentVolume.enabled: "{{ enable_prometheus_server_persistent_volume }}" # Must be in string format, otherwise it will be ignored by the helm_toolbox module.
       server.persistentVolume.size: "{{ prometheus_server_persistent_volume_size }}"
       server.persistentVolume.storageClass: "{{ prometheus_server_storage_class }}"
       alertmanager.enabled: "{{ enable_prometheus_alertmanager }}"
@@ -641,7 +643,7 @@ charts:
     chart:
       path: "{{ grafana_path }}"
       version: "{{ grafana_version }}"
-    chart_extra_vars: # 如果没有 extra_vars，需留空
+    chart_extra_vars: # If there are no extra_vars, leave it empty.
       adminUser: "{{ grafana_admin_user }}"
       adminPassword: "{{ grafana_admin_password }}"
       persistence.enabled: "{{ enable_grafana_persistent_volume }}"
@@ -849,7 +851,7 @@ charts:
     chart_extra_vars:
       replicas: "{{ elasticsearch_replicas }}"
       minimumMasterNodes: "{{ minimum_master_nodes }}"
-      persistence.enabled: "false" # 暂时关闭，后续启用 storageclass
+      persistence.enabled: "false" # Temporarily disabled, will enable storageclass later.
   kibana:
     name: "{{ kibana_name }}"
     namespace: "{{ kibana_namespace }}"

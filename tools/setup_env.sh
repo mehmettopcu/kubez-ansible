@@ -5,7 +5,7 @@
 # This script is intended to be used for install kubernetes env.
 
 REPO=gopixiu-io
-# 选择需要安装的分支，默认 master 分支
+# Choose the branch to install, default is the master branch.
 BRANCH=master
 
 TARGET=kubez-ansible-${BRANCH//\//-}
@@ -100,8 +100,8 @@ function prep_work {
         apt-get update
         apt install -y git python3-pip unzip
     else
-        echo "当前版本不支持: $DISTRO" 1>&2
-        echo "CentOS 7, Debian 10 & Ubuntu 18.04 等操作系统，请参考 https://github.com/gopixiu-io/kubez-ansible/tree/stable/tiger" 1>&2
+        echo "The current version does not support: $DISTRO" 1>&2
+        echo "For operating systems like CentOS 7, Debian 10, and Ubuntu 18.04, please refer to https://github.com/gopixiu-io/kubez-ansible/tree/stable/tiger" 1>&2
 
         echo "Unsupported Distro: $DISTRO" 1>&2
         echo "CentOS 7, Debian 10 and Ubuntu 18.04 with python2 should refer to https://github.com/gopixiu-io/kubez-ansible/tree/stable/tiger" 1>&2

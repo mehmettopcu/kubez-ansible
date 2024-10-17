@@ -1,6 +1,6 @@
 ---
-# 1. 仅适用机器密码一致的场景
-# 2. 仅设置 root 用户的 authorized key
+# 1. Applicable only for machines with the same password
+# 2. Only sets the authorized key for the root user
 - name: Set authorized key for user root
   authorized_key:
     user: root

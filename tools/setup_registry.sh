@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# Bootstrap script to install nexus.
+# Bootstrap script to install Nexus.
 #
-# This script is intended to be used for install nexus server for offline env.
+# This script is intended to be used for installing the Nexus server in an offline environment.
 
-# 后续优化
+# Subsequent optimization
 HOST_IP=`cat k8senv.yaml |grep "^local_ip"|cut -d "=" -f2|sed 's/"//g'`
 MIRROR_REPO=`cat k8senv.yaml |grep "^mirrors_repo"|cut -d "=" -f2|sed 's/"//g'`
 REGISTRY_REPO=`cat k8senv.yaml |grep "^regis_repos"|cut -d "=" -f2|sed 's/"//g'`
@@ -12,7 +12,7 @@ REGISTRY_REPO=`cat k8senv.yaml |grep "^regis_repos"|cut -d "=" -f2|sed 's/"//g'`
 WORKDIR=$(pwd)
 
 function prep_work() {
-    # TODO: 补充前置检查
+    # TODO: Add preliminary checks
     grep -q "$MIRROR_REPO" /etc/hosts || echo "$HOST_IP $MIRROR_REPO" >> /etc/hosts
     grep -q "$REGISTRY_REPO" /etc/hosts || echo "$HOST_IP $REGISTRY_REPO" >> /etc/hosts
 }
@@ -24,23 +24,23 @@ function setup_nexus() {
 
     if [ ! -d "/data/nexus" ]; then
         if [ ! -e "./nexus.tar.gz" ]; then
-            echo "当前目录中未发现 nexus.tar.gz，无法进行 nexus 的安装" 1>&2
+            echo "Nexus installation cannot proceed as nexus.tar.gz was not found in the current directory." 1>&2
             exit 1
         fi
         tar -zxvf ./nexus.tar.gz -C /data
     fi
 
-    # 启动 nexus.sh
+    # Start nexus.sh
     cd /data/nexus && sh nexus.sh start
     yum clean all
 
-    # 切换回工作目录
+    # Switch back to the working directory
     cd $WORKDIR
 
-    echo "nexus 安装成功"
+    echo "Nexus installation successful."
 }
 
-# TODO: 通过 docker 命令行 来推送镜像，临时解决方法，后续移除仓库对 docker 的依赖
+# TODO: Temporarily resolve the dependency on Docker for pushing images; will remove later.
 function install_docker() {
     yum -y install docker-ce
     if [ ! -e "/etc/docker/daemon.json" ]; then
@@ -66,7 +66,7 @@ function push_images() {
     fi
     cd k8soffimage && sh k8simage.sh load && sh k8simage.sh push ${REGISTRY_REPO}
 
-    # 切换回工作目录
+    # Switch back to the working directory
     cd $WORKDIR
 }
 
@@ -75,14 +75,14 @@ function push_packages(){
         tar -xvf rpmpackages.tar.gz
     fi
 
-    echo $(date) "正在上传rpm包..."
+    echo $(date) "Uploading RPM packages..."
     cd rpmpackages && find . -name "*.rpm" -exec curl -v -u "admin:admin@AdMin123" --upload-file {} http://${REGISTRY_REPO}:50000/repository/yuminstall/ \;
-    echo $(date) "rpm包上传完成"
+    echo $(date) "RPM package upload complete."
 
     cd $WORKDIR
 
-    # 服务生效有时间间隔，脚本固定等待 60s
-    echo "等待 60 秒，等 rpm 包生效"
+    # Service effectiveness has a time interval, script waits for 60 seconds.
+    echo "Waiting for 60 seconds for the RPM packages to take effect."
     sleep 60
     yum makecache
 }
