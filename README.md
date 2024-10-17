@@ -1,91 +1,97 @@
 # Kubez-ansible Overview
 
-To provide quick deployment tools for kubernetes cluster and cloud native application
+To provide quick deployment tools for Kubernetes clusters and cloud-native applications.
 
 ![Build Status][build-url]
 [![Release][release-image]][release-url]
 [![License][license-image]][license-url]
 
-This session has been tested on Rocky 8.5+, Debian 11, Ubuntu 20.04+, openEuler 22.03 and Kylin V10 which supported by python3.
+This session has been tested on Rocky 8.5+, Debian 11, Ubuntu 20.04+, openEuler 22.03, and Kylin V10, all supported by Python3.
 
-More distribution supported see [more](https://github.com/gopixiu-io/kubez-ansible/tree/stable/tiger)
+For more supported distributions, see [more](https://github.com/gopixiu-io/kubez-ansible/tree/stable/tiger).
 
 ## Getting Started
+
 Learn about Kubez Ansible by reading the documentation online [kubez-ansible](https://www.bilibili.com/video/BV1L84y1h7LE/).
 
 ## Supported Components
-- 集群指南
-  - [单节点集群](docs/install/all-in-one.md) 单节点集群的快速部署
-  - [多节点集群](docs/install/multinode.md) 多节点集群部署 (1master + 多node)
-  - [高可用集群](docs/install/availability.md) 高可用集群部署 (3master + 多node)
-  - [离线部署](https://github.com/pixiu-io/kubez-ansible-offline)
-  - [扩容](docs/install/expansion.md)
-  - [销毁](docs/install/destroy.md)
 
-- 网络插件
-  - [flannel](https://github.com/flannel-io/flannel)
-  - [calico](https://github.com/projectcalico/calico)
+- Cluster Guides
+  - [Single Node Cluster](docs/install/all-in-one.md) Quick deployment of a single-node cluster.
+  - [Multi Node Cluster](docs/install/multinode.md) Multi-node cluster deployment (1 master + multiple nodes).
+  - [High Availability Cluster](docs/install/availability.md) High availability cluster deployment (3 masters + multiple nodes).
+  - [Offline Deployment](https://github.com/pixiu-io/kubez-ansible-offline).
+  - [Scaling](docs/install/expansion.md).
+  - [Destruction](docs/install/destroy.md).
 
-- 容器运行时
-  - [docker](https://github.com/docker)
-  - [containerd](https://github.com/containerd/containerd)
+- Network Plugins
+  - [Flannel](https://github.com/flannel-io/flannel).
+  - [Calico](https://github.com/projectcalico/calico).
 
-- 存储插件
-  - [NFS](docs/apply/nfs.md) 文件存储
-  - [Ceph](docs/apply/ceph-guide.md) 块存储
-  - [MinIO](docs/apply/minio.md) 对象存储
+- Container Runtimes
+  - [Docker](https://github.com/docker).
+  - [Containerd](https://github.com/containerd/containerd).
 
-- 云原生应用
-  - 基础应用
-    - [Helm3](docs/apply/helm3-guide.md)
-    - [Nginx Ingress](docs/apply/ingress.md)
-    - [Dashboard](docs/apply/dashboard.md)
-    - [Metrics Server](docs/apply/metrics.md)
-    - [MetalLB](docs/apply/metallb.md)
-    - [Cilium&Hubble](docs/apply/cilium.md)
-  - 日志监控
-    - [Loki](docs/apply/loki.md)
-    - [Loggie](docs/apply/loggie.md)
-    - [Grafana](docs/apply/grafana.md)
-    - [Promtail](docs/apply/promtail.md)
-    - [Prometheus](docs/apply/prometheus.md)
-  - 中间件
-    - [OLM](docs/paas/olm.md)
-    - [PostgreSQL](docs/paas/postgres.md)
-    - [Redis](docs/paas/redis.md)
-    - [Kafka](docs/paas/kafka.md)
-    - [RabbitMQ](docs/paas/rabbitmq.md)
-    - [MongoDB](docs/paas/mongodb.md)
-    - [Zookeeper](docs/paas/zookeeper.md)
-  - 微服务
-    - [Isito](docs/apply/istio.md)
+- Storage Plugins
+  - [NFS](docs/apply/nfs.md) File storage.
+  - [Ceph](docs/apply/ceph-guide.md) Block storage.
+  - [MinIO](docs/apply/minio.md) Object storage.
+
+- Cloud Native Applications
+  - Basic Applications
+    - [Helm3](docs/apply/helm3-guide.md).
+    - [Nginx Ingress](docs/apply/ingress.md).
+    - [Dashboard](docs/apply/dashboard.md).
+    - [Metrics Server](docs/apply/metrics.md).
+    - [MetalLB](docs/apply/metallb.md).
+    - [Cilium&Hubble](docs/apply/cilium.md).
+  - Logging and Monitoring
+    - [Loki](docs/apply/loki.md).
+    - [Loggie](docs/apply/loggie.md).
+    - [Grafana](docs/apply/grafana.md).
+    - [Promtail](docs/apply/promtail.md).
+    - [Prometheus](docs/apply/prometheus.md).
+  - Middleware
+    - [OLM](docs/paas/olm.md).
+    - [PostgreSQL](docs/paas/postgres.md).
+    - [Redis](docs/paas/redis.md).
+    - [Kafka](docs/paas/kafka.md).
+    - [RabbitMQ](docs/paas/rabbitmq.md).
+    - [MongoDB](docs/paas/mongodb.md).
+    - [Zookeeper](docs/paas/zookeeper.md).
+  - Microservices
+    - [Istio](docs/apply/istio.md).
   - CICD
-    - [Tekton](docs/apply/tekton.md)
-    - [Jenkins](docs/apply/jenkins.md)
-    - [Harbor](docs/apply/harbor.md)
-    - [Jfrog-Artifactory](docs/apply/artifactory.md)
-  - 健康检查
-    - [Kuberhealthy](docs/apply/kuberhealthy.md)
+    - [Tekton](docs/apply/tekton.md).
+    - [Jenkins](docs/apply/jenkins.md).
+    - [Harbor](docs/apply/harbor.md).
+    - [Jfrog-Artifactory](docs/apply/artifactory.md).
+  - Health Checks
+    - [Kuberhealthy](docs/apply/kuberhealthy.md).
   - Certificates
-    - [Cert-manager](docs/apply/cert-manager.md)
-  - 混沌工程
-    - [ChaosMesh](docs/apply/chaos-mesh.md)
+    - [Cert-manager](docs/apply/cert-manager.md).
+  - Chaos Engineering
+    - [ChaosMesh](docs/apply/chaos-mesh.md).
 
-- 自研云原生
-  - [Pixiu](https://github.com/caoyingjunz/pixiu)
-  - [Localstorage](https://github.com/caoyingjunz/csi-driver-localstorage)
-  - [Pixiu-autoscaler](https://github.com/caoyingjunz/pixiu-autoscaler)
-  - [PodSet](https://github.com/caoyingjunz/podset-operator)
-- 组件集成手册
-  - [组件集成](docs/install/app-integration-doc.md)
-## 学习分享
-- [go-learning](https://github.com/caoyingjunz/go-learning)
+- Self-developed Cloud Native
+  - [Pixiu](https://github.com/caoyingjunz/pixiu).
+  - [Localstorage](https://github.com/caoyingjunz/csi-driver-localstorage).
+  - [Pixiu-autoscaler](https://github.com/caoyingjunz/pixiu-autoscaler).
+  - [PodSet](https://github.com/caoyingjunz/podset-operator).
 
-## 沟通交流
-- 搜索微信号 `yingjuncz`, 备注（github）, 验证通过会加入群聊
-- [bilibili](https://space.bilibili.com/3493104248162809?spm_id_from=333.1007.0.0) 技术分享
+- Component Integration Manual
+  - [Component Integration](docs/install/app-integration-doc.md).
 
-Copyright 2019 caoyingjun (cao.yingjunz@gmail.com) Apache License 2.0
+## Learning and Sharing
+
+- [go-learning](https://github.com/caoyingjunz/go-learning).
+
+## Communication
+
+- Search WeChat ID `yingjuncz`, note (GitHub); after verification, you will be added to the group chat.
+- [Bilibili](https://space.bilibili.com/3493104248162809?spm_id_from=333.1007.0.0) for technical sharing.
+
+Copyright 2019 caoyingjun (<cao.yingjunz@gmail.com>) Apache License 2.0.
 
 [build-url]: https://github.com/gopixiu-io/kubez-ansible/actions/workflows/ci.yml/badge.svg
 [release-image]: https://img.shields.io/badge/release-download-orange.svg
