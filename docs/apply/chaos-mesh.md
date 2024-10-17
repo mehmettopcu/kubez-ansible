@@ -1,13 +1,16 @@
-# Chaos Mesh 安装
+# Chaos Mesh Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` 环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
-- StorageClass。
+## Prerequisites
 
-### 开启 Chaos Mesh 组件
-1. 编辑 `/etc/kubez/globals.yml`
+- A functioning `kubernetes` environment. Refer to the installation manual for [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
+- StorageClass.
 
-2. 取消 `enable_chaos_mesh: "no"` 的注释，并设置为 `"yes"`
+### Enable Chaos Mesh Component
+
+1. Edit `/etc/kubez/globals.yml`.
+
+2. Uncomment `enable_chaos_mesh: "no"` and set it to `"yes"`.
+
     ```shell
     ####################
     # Chaos Mesh Options
@@ -17,16 +20,18 @@
     #chaos_mesh_namespace: "{{ kubez_namespace }}"
     ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose based on your scenario).
+
     ```shell
-    # 单节点集群场景
+    # Single node cluster scenario
     kubez-ansible apply
 
-    # 高可用集群场景
+    # High availability cluster scenario
     kubez-ansible -i multinode apply
     ```
 
-4. 部署完验证
+4. Verify after deployment.
+
     ```shell
     # kubectl get pod -n pixiu-system
     chaos-controller-manager-6f75cdf4f9-62fmh   0/1     ContainerCreating   0             6m24s

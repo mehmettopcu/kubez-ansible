@@ -1,15 +1,15 @@
 # Cilium & Hubble
 
-## 依赖条件
+## Prerequisites
 
-- 运行正常的 `kubernetes` ( v1.21+ )环境。安装手册参考 [高可用集群](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/multinode.md) 或 [单节点集群](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/all-in-one.md)
+- A functioning `kubernetes` (v1.21+) environment. Refer to the installation manual for [High Availability Cluster](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/multinode.md) or [Single Node Cluster](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/all-in-one.md).
 - Linux kernel >= 4.9.17
 
-## 开启 Cilium 组件
+## Enable Cilium Component
 
-1. 编辑 `/etc/kubez/globals.yml`
+1. Edit `/etc/kubez/globals.yml`
 
-2. 取消 `enable_cilium: "no"` 的注释，并设置为 `"yes"`，设置Cilium的版本 `cilium_chart_version: "1.16.1"`
+2. Uncomment `enable_cilium: "no"` and set it to `"yes"`, and set Cilium's version to `cilium_chart_version: "1.16.1"`
 
    ```yaml
    ################
@@ -19,16 +19,16 @@
    cilium_chart_version: "1.14.5"
    ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose based on your scenario)
 
    ```shell
-   # 单节点集群场景
+   # Single node cluster scenario
    kubez-ansible apply
-   # 高可用集群场景
+   # High availability cluster scenario
    kubez-ansible -i multinode apply
    ```
 
-4. 部署完验证
+4. Verify after deployment
 
    ```shell
    [root@VM-16-11-centos ~]# kubectl get pods -n kube-system

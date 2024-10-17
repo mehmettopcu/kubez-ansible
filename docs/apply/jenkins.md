@@ -1,65 +1,71 @@
-# Jenkins 安装
+# Jenkins Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` 环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
-- StorageClass。
+## Prerequisites
 
-### 开启 Jenkins 组件
-1. 编辑 `/etc/kubez/globals.yml`
+- A functioning `kubernetes` environment. Refer to the installation manuals for [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
+- StorageClass.
 
-2. 取消 `enable_jenkins: "no"` 的注释，并设置为 `"yes"`
+## Enable Jenkins Component
+
+1. Edit `/etc/kubez/globals.yml`.
+
+2. Uncomment `enable_jenkins: "no"` and set it to `"yes"`:
+
     ```shell
     ##################
     # Jenkins Options
     ##################
     enable_jenkins: "yes"
-    # 配置 jenkins 实例运行的命名空间
-    #jenkins_namespace: "{{ kubez_namespace }}"
-    # 配置 jenkins 需要使用的 StorageClass 名称，本例中 StorageClass 为 managed-nfs-storage
+    # Configure the namespace where the Jenkins instance runs
+    # jenkins_namespace: "{{ kubez_namespace }}"
+    # Configure the name of the StorageClass that Jenkins needs, in this example the StorageClass is managed-nfs-storage
     jenkins_storage_class: managed-nfs-storage
-    # 配置 jenkins 需要使用的存储大小
+    # Configure the storage size that Jenkins needs
     jenkins_storage_size: 18Gi
     ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose according to your situation):
+
     ```shell
-    # 单节点集群场景
+    # Single node cluster scenario
     kubez-ansible apply
 
-    # 高可用集群场景
+    # High availability cluster scenario
     kubez-ansible -i multinode apply
     ```
 
-4. 部署完验证
+4. Validate after deployment:
+
     ```shell
-    # jenkins pvc 分配成功
-    [root@pixiu tmp]# kubectl get pvc -n pixiu-system  jenkins
+    # Jenkins PVC allocation successful
+    [root@pixiu tmp]# kubectl get pvc -n pixiu-system jenkins
     NAME      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS          AGE
     jenkins   Bound    pvc-c69ddac3-5b5e-4a2f-82bd-d2405e106d92   18Gi       RWO            managed-nfs-storage   22s
 
-    # jenkins pod 均运行正常
-    [root@pixiu tmp]# kubectl get pod -n pixiu-system  jenkins-0
+    # All Jenkins pods are running normally
+    [root@pixiu tmp]# kubectl get pod -n pixiu-system jenkins-0
     NAME        READY   STATUS     RESTARTS   AGE
     jenkins-0   1/1     Running    0          65s
     ```
 
-5. 访问 `Jenkins`
+5. Access `Jenkins`:
+
     ```shell
-    # 获取 Jenkins 的 service 信息
-    [root@pixiu tmp]# kubectl get svc -n pixiu-system  jenkins
+    # Get the service information for Jenkins
+    [root@pixiu tmp]# kubectl get svc -n pixiu-system jenkins
     NAME      TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
     jenkins   ClusterIP  10.254.231.203   <none>       8080/TCP        4h22m
 
-    # 如果 jenkins service 不是 NodePort 类型，则手动调整成 NodePort 类型
+    # If the Jenkins service is not of type NodePort, manually change it to NodePort
     # kubectl edit svc jenkins -n pixiu-system
       ...
       sessionAffinity: None
       type: NodePort
 
-    # 查看 NodePort 的值
-    [root@pixiu tmp]# kubectl get svc -n pixiu-system  jenkins
+    # View the NodePort value
+    [root@pixiu tmp]# kubectl get svc -n pixiu-system jenkins
     NAME      TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
     jenkins   NodePort   10.254.231.203   <none>       8080:30022/TCP   4h27m
 
-    # 此时 Jenkins 的访问地址为 `公网ip:30022`，即可访问到 Jenkins. 账号密码为 `admin`/`admin123456`。如果你修改过密码，请使用修改后的密码。·
+    # At this point, the access address for Jenkins is `public_ip:30022`, which can be used to access Jenkins. The username and password are `admin`/`admin123456`. If you have changed the password, please use the updated password.
     ```

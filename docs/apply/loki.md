@@ -1,14 +1,17 @@
 # Loki
 
-## 依赖条件
-- 运行正常的 `kubernetes` ( v1.21+ )环境。安装手册参考 [高可用集群](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/multinode.md) 或 [单节点集群](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/all-in-one.md)
-- StorageClass
-- Minio（创建三个bucket，分别为chunks，ruler，admin）
+## Prerequisites
 
-## 开启 Loki 组件
-1. 编辑 `/etc/kubez/globals.yml`
+- A functioning `kubernetes` (v1.21+) environment. Refer to the installation manuals for [High Availability Cluster](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/multinode.md) or [Single Node Cluster](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/all-in-one.md).
+- StorageClass.
+- Minio (create three buckets: chunks, ruler, admin).
 
-2. 取消 `enable_loki: "no"` 的注释，并设置为 `"yes"`，S3的相关参数需要根据自己的环境进行修改。
+## Enable Loki Component
+
+1. Edit `/etc/kubez/globals.yml`.
+
+2. Uncomment `enable_loki: "no"` and set it to `"yes"`. Modify the S3-related parameters according to your environment.
+
    ```yaml
    ##############
    # Loki Options
@@ -33,7 +36,7 @@
    loki_storage_bucketNames_ruler: ruler
    loki_storage_bucketNames_admin: admin
 
-   # S3 配置
+   # S3 configuration
    s3:
      endpoint: http://172.17.16.13:9000
      secretAccessKey: minioadmin
@@ -42,19 +45,21 @@
      insecure: true
    ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose according to your situation):
+
    ```shell
-   # 单节点集群场景
+   # Single node cluster scenario
    kubez-ansible apply
 
-   # 高可用集群场景
+   # High availability cluster scenario
    kubez-ansible -i multinode apply
    ```
 
-4. 部署完验证
+4. Validate after deployment:
+
    ```shell
-   # 所有的 loki pod 均运行正常
-   [root@VM-16-13-centos ~]# kubectl get pods -n pixiu-system|grep loki
+   # All Loki pods are running normally
+   [root@VM-16-13-centos ~]# kubectl get pods -n pixiu-system | grep loki
    loki-canary-c4twh                              1/1     Running   0          3h12m
    loki-canary-j7xsx                              1/1     Running   0          3h12m
    loki-gateway-7c76bc95dd-6s8g4                  1/1     Running   0          3h12m

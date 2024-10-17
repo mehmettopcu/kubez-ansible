@@ -1,14 +1,17 @@
-# Postgres-Operator 安装
+# Postgres-Operator Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` ( v1.21+ )环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
-- 集群已安装 `OLM` 组件。安装手册参考 [OLM安装](../paas/olm.md)
-- StorageClass
+## Prerequisites
 
-### 开启 Postgres-Operator 组件
-1. 编辑 `/etc/kubez/globals.yml`
+- A functioning 'kubernetes' (v1.21+) environment. For installation instructions, refer to [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
+- The cluster has the 'OLM' component installed. For installation instructions, refer to [OLM Installation](../paas/olm.md).
+- StorageClass.
 
-2. 取消 `enable_postgres: "no"` 的注释，并设置为 `"yes"`
+### Enable Postgres-Operator Component
+
+1. Edit '/etc/kubez/globals.yml'.
+
+2. Uncomment 'enable_postgres: "no"' and set it to '"yes"'.
+
     ```shell
     ##################
     # Postgres Options
@@ -18,29 +21,35 @@
     postgres_name: postgres
     postgress_namespace: operators
     ```
-3. 执行安装命令（根据实际情况选择）
+
+3. Execute the installation command (choose based on your situation).
+
     ```shell
-    # 单节点集群场景
+    # Single Node Cluster Scenario
     kubez-ansible apply
 
-    # 高可用集群场景
+    # High Availability Cluster Scenario
     kubez-ansible -i multinode apply
     ```
-4. 部署完验证
+
+4. Verify after deployment.
+
     ```shell
-    # postgres 已注册至集群中
+    # Postgres has been registered in the cluster
     [root@VM-16-5-centos ~]# kubectl get deploy,csv -n operators
     NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
     deployment.apps/pgo   1/1     1            1           116m
 
     NAME                                                                 DISPLAY                           VERSION   REPLACES                  PHASE
     clusterserviceversion.operators.coreos.com/postgresoperator.v5.3.0   Crunchy Postgres for Kubernetes   5.3.0     postgresoperator.v5.2.0   Succeeded
-   ```
+    ```
 
-至此 `Postgres Operator` 已安装至集群中, 接下来展示 `Postgres` 实例的创建。
+At this point, the 'Postgres Operator' has been installed in the cluster. Next, let's demonstrate creating a 'Postgres' instance.
 
-### 创建 Postgres CR 实例
-1. 修改 `yaml` 文件（根据实际情况选择具体参数）
+## Create Postgres CR Instance
+
+1. Modify the 'yaml' file (adjust parameters as needed).
+
    ```yaml
    apiVersion: postgres-operator.crunchydata.com/v1beta1
    kind: PostgresCluster
@@ -73,19 +82,22 @@
                    requests:
                      storage: 1Gi
    ```
-- 修改 `storageClassName` 为实际存在的 storageClass
-- 修改 `storage` 为实际需要的大小
 
-2. 执行 kubectl apply 进行实例安装
+    - Change 'storageClassName' to an existing storage class.
+    - Adjust 'storage' to the required size.
+
+2. Execute 'kubectl apply' to create the instance.
+
    ```shell
-   # create-postgres-cluster.yaml 为步骤1展示的内容
+   # create-postgres-cluster.yaml is the content shown in step 1
    [root@VM-16-5-centos manifests]# kubectl apply -f create-postgres-cluster.yaml
    postgrescluster.postgres-operator.crunchydata.com/hippo created
    ```
 
-3. 部署完验证
+3. Verify after deployment.
+
    ```shell
-   # pod 均运行正常
+   # Pods are running normally
    [root@VM-16-5-centos manifests]# kubectl get po,pv,pvc
    NAME                          READY   STATUS      RESTARTS   AGE
    pod/hippo-backup-7gcg-zx684   0/1     Completed   0          3m26s
@@ -100,14 +112,16 @@
    persistentvolumeclaim/hippo-instance1-crq2-pgdata   Bound    pvc-d2bcb0b3-9d7d-4e11-8bae-a74e62b3ad64   1Gi        RWO            managed-nfs-storage   7m37s
    persistentvolumeclaim/hippo-repo1                   Bound    pvc-ba6958d7-3fc7-4a9c-bd69-4cb9d8d7c291   1Gi        RWO            managed-nfs-storage   7m37s
 
-   # 进入 pod 验证
+   # Enter the pod for verification
    [root@VM-4-3-centos ~]# kubectl exec -it hippo-instance1-zw2j-0 -- /bin/bash
-   Defaulted container "database"out of: database, replication-cert-copy, pgbackrest, pgbackrest-config, postgres-startup (init), nss-wrapper-init (init)
+   Defaulted container "database" out of: database, replication-cert-copy, pgbackrest, pgbackrest-config, postgres-startup (init), nss-wrapper-init (init)
    psql (14.5)
    Type "help" for help.
    postgres=#
    ```
-4. 详细文档
+
+4. Detailed documentation.
+
    ```shell
    https://github.com/chenghongxi/kubernetes-learning/blob/master/olm/postgres-Operators/README.md
    ```

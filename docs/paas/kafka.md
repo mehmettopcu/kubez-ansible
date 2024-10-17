@@ -1,13 +1,17 @@
-# kafka-Operators 安装
+# kafka-Operators Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` ( v1.21+ )环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
-- 集群已安装 `OLM` 组件。安装手册参考 [OLM安装](../paas/olm.md)
+## Prerequisites
+
+- A functioning 'kubernetes' (v1.21+) environment. For installation instructions, refer to [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
+- The 'OLM' component must be installed in the cluster. For installation instructions, refer to [OLM Installation](../paas/olm.md).
 - StorageClass
-### 开启 Rabbitmq-Operators 组件
-1. 编辑 `/etc/kubez/globals.yml`
 
-2. 取消 `enable_kafka: "no"`的注释，并设置为 `"yes"`, 取消`kafka_name: kafka`的注释,自定义设置kafka集群名称， 取消 `kafka_namespace: operators`的注释，自定义namespace
+### Enable Rabbitmq-Operators Component
+
+1. Edit '/etc/kubez/globals.yml'
+
+2. Uncomment 'enable_kafka: "no"' and set it to '"yes"'. Uncomment 'kafka_name: kafka' to customize the Kafka cluster name. Uncomment 'kafka_namespace: operators' to customize the namespace.
+
     ```shell
     ###############
     # kafka Options
@@ -17,25 +21,31 @@
     kafka_name: kafka
     kafka_namespace: operators
     ```
-3. 执行安装命令（根据实际情况选择）
+
+3. Execute the installation command (choose based on your situation).
+
     ```shell
-    # 单节点集群场景
+    # Single Node Cluster Scenario
     kubez-ansible apply
-    # 高可用集群场景
+    # High Availability Cluster Scenario
     kubez-ansible -i multinode apply
     ```
-4. 部署完验证
+
+4. Verify after deployment.
+
     ```shell
-    # rabbitmq 已注册至集群中
+    # rabbitmq has been registered in the cluster
     kubectl get csv -n operators
     [root@VM-4-3-centos ~]# kubectl get csv -n operators
     NAME                               DISPLAY   VERSION   REPLACES                           PHASE
     strimzi-cluster-operator.v0.33.0   Strimzi   0.33.0    strimzi-cluster-operator.v0.32.0   Succeeded
 
-至此 `kafka Operator` 已安装至集群中, 接下来展示 `kafka` 实例的创建。
+At this point, the 'kafka Operator' has been installed in the cluster. Next, let's demonstrate the creation of a 'kafka' instance.
 
-### 创建 kafka CR 实例
-1. 修改 `yaml` 文件（根据实际情况选择具体参数）
+### Create Kafka CR Instance
+
+1. Modify the 'yaml' file (choose specific parameters based on your situation).
+
    ```yaml
     apiVersion: kafka.strimzi.io/v1beta2
     kind: Kafka
@@ -70,14 +80,17 @@
       entityOperator:
         topicOperator: {}
         userOperator: {}
+   ```
 
-   ```
-2. 执行 kubectl apply 进行实例安装
+2. Execute 'kubectl apply' to install the instance.
+
    ```shell
-   #kafka-operator.yaml 为步骤1展示的内容
-   kubectl apply -f  kafka-operator.yaml
+   # kafka-operator.yaml is the content shown in step 1
+   kubectl apply -f kafka-operator.yaml
    ```
-3. 部署完验证
+
+3. Verify after deployment.
+
    ```shell
    kubectl get po,sc,pv,pvc,secret
    [root@VM-4-3-centos ~]#
@@ -106,17 +119,24 @@
    secret/my-cluster-zookeeper-nodes               Opaque                                12     27h
    secret/my-cluster-zookeeper-token-h7zxl         kubernetes.io/service-account-token   3      27h
    ```
-4. 删除资源
-- 删除步骤3中的资源
+
+4. Delete resources
+
+- Delete the resources from step 3.
+
  ```shell
   kubectl delete -f kafka-operator.yaml
   ```
-- 删除此Operator
+
+- Remove this Operator.
+
 ```shell
 1. kubectl delete subscription <subscription-name> -n operators
 2. kubectl delete clusterserviceversion -n operators
 ```
-5. 详细文档
+
+5. Detailed Documentation
+
 ```shell
 https://github.com/chenghongxi/kubernetes-learning/blob/master/olm/kafka-operators/README.md
 ```

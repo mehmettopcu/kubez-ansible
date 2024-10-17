@@ -1,37 +1,41 @@
-# 依赖安装
+# Dependency Installation
 
-- 仅需要在部署节点安装即可，集群运行节点`无需执行`
-- `直接安装`或`脚本安装`二选一即可
+- Only needs to be installed on the deployment node; nodes running in the cluster `do not need to execute this`.
+- You can choose either `direct installation` or `script installation`.
 
-### 安装步骤
+## Installation Steps
 
-#### 直接安装
+### Direct Installation
+
    ```shell
-   #（推荐）国内快速安装
+   # (Recommended) Quick installation in China
    curl http://s9.cloud.pixiuio.com/master/setup_env.sh | bash
 
-   #（可选）github 安装，需要网络可用
+   # (Optional) GitHub installation, requires internet access
    curl https://raw.githubusercontent.com/pixiu-io/kubez-ansible/master/tools/setup_env.sh | bash
    ```
-#### 脚本安装
+
+### Script Installation
+
    ```text
-   # (推荐）国内快速获取脚本
+   # (Recommended) Quick script retrieval in China
    curl http://s9.cloud.pixiuio.com/master/setup_env.sh -o setup_env.sh
 
-   #（可选）自动获取，网络通时，通过 curl 命令直接获取脚本到本地
+   # (Optional) Automatic retrieval; when online, directly fetch the script to local using curl
    curl https://raw.githubusercontent.com/pixiu-io/kubez-ansible/master/tools/setup_env.sh -o setup_env.sh
 
-   # 手动获取，自动获取失败时使用，一般因为网络不通或者未安装 curl 命令
-   # 拷贝项目的 tools/setup_env.sh, 并保存到 setup_env.sh
+   # Manual retrieval; use this if automatic retrieval fails, usually due to network issues or missing curl command
+   # Copy the project's tools/setup_env.sh and save it as setup_env.sh
 
-   # 执行安装脚本
+   # Execute the installation script
    bash setup_env.sh
    ```
 
-#### 验证
+### Verification
+
    ```shell
-   # 执行 kubez-ansible 有正常回显
+   # Running kubez-ansible should produce normal output
    kubez-ansible -h
 
-   # 工作目录（通常是 /root 目录）下自动生成 multinode
+   # multinode will be automatically generated in the working directory (usually the /root directory)
    ```

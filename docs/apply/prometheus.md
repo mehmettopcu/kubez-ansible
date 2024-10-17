@@ -1,20 +1,21 @@
 # Prometheus
 
-## 部署K8S
+## Deploying K8S
 
-- 运行正常的 `kubernetes` ( 1.17+ )环境。安装手册参考 [高可用集群](https://github.com/caoyingjunz/kubez-ansible/blob/master/docs/install/multinode.md) 或 [单节点集群](https://github.com/caoyingjunz/kubez-ansible/blob/master/docs/install/all-in-one.md)
+- A properly functioning `kubernetes` (1.17+) environment. For installation manuals, refer to [High Availability Cluster](https://github.com/caoyingjunz/kubez-ansible/blob/master/docs/install/multinode.md) or [Single Node Cluster](https://github.com/caoyingjunz/kubez-ansible/blob/master/docs/install/all-in-one.md).
 
-## 开启prometheus组件
+## Enabling Prometheus Components
 
-编辑 `/etc/kubez/globals.yml`
-取消 `enable_prometheus: "no"` 的注释，并设置为 `"yes"`
+Edit `/etc/kubez/globals.yml`  
+Uncomment `enable_prometheus: "no"` and set it to `"yes"`.
 
 ```sh
-# grafana will also be deploy when prometheus is enable.
+# Grafana will also be deployed when Prometheus is enabled.
 enable_prometheus: "yes"
 ```
 
-## 验证
+## Validation
+
 ```sh
 [root@k8s-151 ~]# kubectl get pods -A | grep prometheus
 pixiu-system    prometheus-alertmanager-55ff5486b8-6xfx9         2/2     Running     10 (95s ago)   20h
@@ -24,12 +25,14 @@ pixiu-system    prometheus-pushgateway-6475d4bbcc-lj6f5          1/1     Running
 pixiu-system    prometheus-server-5bc886d8bf-7c9b2               2/2     Running     10 (95s ago)   20h
 ```
 
-## (可选) Prometheus alerts
+## (Optional) Prometheus Alerts
 
-[Promethues Alerts](https://awesome-prometheus-alerts.grep.to/)
+[Prometheus Alerts](https://awesome-prometheus-alerts.grep.to/)
 
-## Ingress配置
-### 第一步：编辑yaml文件
+## Ingress Configuration
+
+### Step 1: Edit the YAML file
+
 ```sh
 cat monitoring-ingress.yaml
 
@@ -100,12 +103,14 @@ spec:
                   number: 80
 ```
 
-### 第二步：将Prometheus与Grafana暴露在Ingress中
+### Step 2: Expose Prometheus and Grafana in Ingress
+
 ```sh
 kubectl apply -f 3.monitoring-ingress.yaml
 ```
 
-### 第三步：配置本地hosts解析并验证
+### Step 3: Configure local hosts resolution and validate
+
 ```sh
 [root@k8s-151 ~]# kubectl get ing -A
 NAMESPACE      NAME             CLASS   HOSTS                   ADDRESS      PORTS   AGE
@@ -114,7 +119,8 @@ pixiu-system   grafana          nginx   k8s-grafana.pixiu.com   10.0.0.115   80 
 pixiu-system   prometheus-k8s   nginx   k8s-prom.pixiu.com      10.0.0.115   80      13h
 ```
 
-## 获取Grafana密码
+## Get Grafana Password
+
 ```sh
-kubectl get secret -n pixiu-system  grafana -o yaml |grep password | awk '{ print $2 }'  | base64 -d
+kubectl get secret -n pixiu-system grafana -o yaml | grep password | awk '{ print $2 }' | base64 -d
 ```

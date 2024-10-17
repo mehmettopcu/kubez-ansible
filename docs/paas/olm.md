@@ -1,31 +1,36 @@
-# OLM 安装
+# OLM Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` ( v1.17+ )环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
+## Prerequisites
 
-### 开启 OLM 组件
-1. 编辑 `/etc/kubez/globals.yml`
+- A functioning `kubernetes` (v1.17+) environment. Refer to the installation manuals for [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
 
-2. 取消 `enable_olm: "no"` 的注释，并设置为 `"yes"`
-    ```shell
+## Enable OLM Components
+
+1. Edit `/etc/kubez/globals.yml`
+
+2. Uncomment `enable_olm: "no"` and set it to `"yes"`
+
+    ```yaml
     ####################################
     # Operator-Lifecycle-Manager Options
     ####################################
     enable_olm: "yes"
     ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose according to your situation)
+
     ```shell
-    # 单节点集群场景
+    # Single node cluster scenario
     kubez-ansible apply
 
-    # 高可用集群场景
+    # High availability cluster scenario
     kubez-ansible -i multinode apply
     ```
 
-4. 部署完验证
+4. Verify deployment
+
     ```shell
-    # 所有的 olm pod 均运行正常
+    # All OLM pods are running normally
     [root@VM-32-9-centos ~]# kubectl get pod -n olm
     NAME                                READY   STATUS        RESTARTS   AGE
     catalog-operator-755d759b4b-lwhjz   1/1     Running       0          2m6s

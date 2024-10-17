@@ -1,24 +1,26 @@
-# Application install guides
+# Application Install Guides
 
-1. 配置 `/etc/kubez/globals.yml`, 开启需要开启的 `application` 选项
-    ``` bash
-    enable_<appication_name>: "yes"
+1. Configure `/etc/kubez/globals.yml` to enable the desired `application` options.
+
+    ```bash
+    enable_<application_name>: "yes"
     ```
 
-    已支持的application name：
+    Supported application names:
     - flannel
     - calico
-    - metrics\_server
-    - nfs\_provisioner
-    - rbd\_provisioner [ceph](ceph-guide.md)
+    - metrics_server
+    - nfs_provisioner
+    - rbd_provisioner [ceph](ceph-guide.md)
     - dashboard
     - prometheus
     - efk
-    - ingress\_nginx
+    - ingress_nginx
     - helm [helm3](helm3-guide.md)
 
-2. 执行如下命令完成指定 `applications` 的安装.
-    ``` bash
+2. Execute the following command to complete the installation of the specified `applications`.
+
+    ```bash
     # multinode
     kubez-ansible -i multinode apply
 
@@ -26,4 +28,4 @@
     kubez-ansible apply
     ```
 
-3. 自行验证
+3. Perform your own verification.

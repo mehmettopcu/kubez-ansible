@@ -1,17 +1,17 @@
-# kubez-ansible 组件集成手册
+# kubez-ansible Component Integration Manual
 
-## 1：集成说明（以为 Jenkins 为例子）
+## 1: Integration Instructions (Using Jenkins as an Example)
 
-### 1.1：在 https://artifacthub.io 这个⽹址找到 Jenkins
+### 1.1: Find Jenkins at <https://artifacthub.io>
 
 ![image](https://github.com/gitlayzer/images/assets/77761224/d7f45a43-1c25-4132-b4d7-96a9441beb1a)
 
-### 1.2：我们查看它的 values 文件
+### 1.2: Let's take a look at its values file
 
 ![image](https://github.com/gitlayzer/images/assets/77761224/02821dc0-1788-4660-90c2-80aded599540)
 ![image](https://github.com/gitlayzer/images/assets/77761224/b7a270aa-bd86-40c2-a350-4221ab0b40ce)
 
-### 在这⾥我们抽出来我们需要的键值对，这⾥你可以先⼿动使⽤ helm 安装之后看下都有哪些默认的可以修改的键值对
+### Here, we extract the key-value pairs we need. You can manually use Helm to install it first and see which default modifiable key-value pairs are available
 
 ```yaml
 jenkins:
@@ -29,12 +29,12 @@ jenkins:
     controller.adminPassword: "{{ initial_admin_password }}"
 ```
 
-### 这⾥的配置⽂件我们需要写到 kubez-ansible ⾥⾯的 ansible/group_vars/all.yml ⾥⾯
+### This configuration file needs to be written into `kubez-ansible` in `ansible/group_vars/all.yml`
 
 ```yaml
-# ################## 需要注意的是，这个文件中的配置的一些缩进与归属，上面的 YAML 我们需要放置到文件的顶头如下 ##################
+# ################## Note that some of the indentations and affiliations in the configuration of this file, the above YAML needs to be placed at the top of the file as follows ##################
 charts:
-  # 这里是我们要集成的应用的 Charts 需要传递的参数
+  # Here are the parameters to pass for the Charts of the application we want to integrate
   jenkins:
     name: jenkins
     namespace: "{{ jenkins_namespace }}"
@@ -50,7 +50,7 @@ charts:
       controller.adminPassword: "{{ initial_admin_password }}"
 ```
 
-### 1.3：同样在 all.yml 编译⼀个 Jenkins 可以配制项
+### 1.3: Also compile a Jenkins configuration item in `all.yml`
 
 ```yaml
 ##################
@@ -58,7 +58,7 @@ charts:
 ##################
 enable_jenkins: "no"
 
-# 这个地⽅就是前⾯ charts ⾥⾯的变量，默认是 chart ⾥⾯的，可供⽤户修改
+# This section corresponds to the variables in the charts above, defaults to those in the chart and can be modified by the user
 jenkins_namespace: "{{ kubez_namespace }}"
 jenkins_storage_class: managed-nfs-storage
 jenkins_storage_size: "8Gi"
@@ -66,7 +66,7 @@ jenkins_storage_size: "8Gi"
 initial_admin_password: "admin123456"
 ```
 
-### 1.4：后⾯还有⼀个配置，相当于打开这个项⽬，此配置需要配置在 enable_charts 内
+### 1.4: There is also a configuration to enable this item, which needs to be set in `enable_charts`
 
 ```yaml
 enable_charts:
@@ -74,7 +74,7 @@ enable_charts:
     enabled: "{{ enable_jenkins | bool }}"
 ```
 
-### 1.5：最终我们在 all.yml 中的配置是这样的
+### 1.5: Finally, our configuration in `all.yml` looks like this
 
 ```yaml
 ##################
@@ -89,7 +89,7 @@ jenkins_storage_size: "8Gi"
 # The initial password for admin
 initial_admin_password: "admin123456"
 
-# helm 仓库配置项
+# Helm repository configuration
 jenkins_repo_name: "{{ default_repo_name }}"
 jenkins_repo_url: "{{ default_repo_url }}"
 jenkins_path: pixiuio/jenkins
@@ -100,7 +100,7 @@ enable_charts:
     enabled: "{{ enable_jenkins | bool }}"
 
 charts:
-  # 这里是我们要集成的应用的 Charts 需要传递的参数
+  # Here are the parameters to pass for the Charts of the application we want to integrate
   jenkins:
     name: jenkins
     namespace: "{{ jenkins_namespace }}"
@@ -116,12 +116,12 @@ charts:
       controller.adminPassword: "{{ initial_admin_password }}"
 ```
 
-### 1.6：我们最后的操作就是在 etc/kubez/globals.yml ⽂件中添加 Jenkins 的这个项目
+### 1.6: Our final action is to add Jenkins to the `etc/kubez/globals.yml` file
 
 ```yaml
-# 其实不难看出，我们是将 ansible/group_vars/all.yml 里面针对 Jenkins 的配置项放到了这里
-# 如果我们去掉了注释，则证明我们需要集成 Jenkins
-# 反之则不会集成 Jenkins
+# It’s not hard to see that we have placed the Jenkins configuration from `ansible/group_vars/all.yml` here.
+# If we remove the comments, it proves that we need to integrate Jenkins.
+# Otherwise, Jenkins will not be integrated.
 
 ##################
 # Jenkins Options
@@ -134,21 +134,21 @@ charts:
 # The initial password for admin
 #initial_admin_password: admin123456
 
-# helm 仓库配置项, 默认为 pixiu helm chart 仓库
+# Helm repository configuration, defaults to pixiu helm chart repository
 #jenkins_repo_name: "{{ default_repo_name }}"
 #jenkins_repo_url: "{{ default_repo_url }}"
 #jenkins_path: pixiuio/jenkins
 #jenkins_version: 4.12.0
 ```
 
-## 2：若使用的是 YAML 文件部署项目
+## 2: If Using YAML Files to Deploy the Project
 
-### 2.1：如果是使⽤ YAML ⽂件部署项⽬，只需要将 YAML ⽂件添加到 ansible/roles/kubernetes/templates/xxxx.yml.j2
+### 2.1: If using YAML files to deploy the project, simply add the YAML file to `ansible/roles/kubernetes/templates/xxxx.yml.j2`
 
-### 2.2：然后在 all.yml ⽂件中添加以下配置
+### 2.2: Then add the following configuration in the `all.yml` file
 
 ```yaml
-# 以下为示例，请以真正集成项目为准
+# The following is an example; please refer to the actual integrated project.
 
 ###############
 # Jenkins Options
@@ -161,13 +161,12 @@ kube_applications:
     enabled: "{{ enable_jenkins | bool }}"
 ```
 
-### 2.3：最后也是需要将配置参数写入到  etc/kubez/globals.yml ⽂件中
+### 2.3: Finally, you also need to write the configuration parameters into the `etc/kubez/globals.yml` file
 
 ```yaml
-# 同 Helm 一致，若开启，则集成，若注释，则不集成
+# Similar to Helm, if enabled, it integrates; if commented out, it does not integrate.
 
 ##################
 # Jenkins Options
 ##################
 #enable_jenkins: "no"
-```

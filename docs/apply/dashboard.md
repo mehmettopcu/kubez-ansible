@@ -1,55 +1,72 @@
-# Dashboard 安装
+# Dashboard Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` 环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
+## Prerequisites
 
-### 描述
-- 通过dashboard能够直观了解 `kubernetes` 集群中运行的资源对象
-- 通过dashboard可以直接管理（创建、删除、重启等操作）资源对象
+- A functioning `kubernetes` environment. Refer to the installation manual for [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
 
-### 开启dashboard组件
-1. 编辑 `/etc/kubez/globals.yml`
+## Description
 
-2. 取消 `enable_dashboard: "no"` 的注释，并设置为 `"yes"`
+- The dashboard provides a visual overview of the resource objects running in the `kubernetes` cluster.
+- The dashboard allows direct management (creation, deletion, restart, etc.) of resource objects.
+
+## Enable Dashboard Component
+
+1. Edit `/etc/kubez/globals.yml`.
+
+2. Uncomment `enable_dashboard: "no"` and set it to `"yes"`:
+
     ```shell
     enable_dashboard: "yes"
     dashboard_chart_version: 6.0.0
     ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose based on your scenario):
+
     ```shell
-    # 单节点集群场景
+
+   # Single node cluster scenario
+
     kubez-ansible apply
 
-    # 高可用集群场景
+   # High availability cluster scenario
+
     kubez-ansible -i multinode apply
     ```
 
-4. 修改 `service` 的服务类型
+4. Modify the `service` type:
+
     ```shell
     [root@master01 ~]# kubectl edit svc -n pixiu-system kubernetes-dashboard
     ...
     spec:
-      type: NodePort #此处添加一种访问方式，选用NodePort
+      type: NodePort # Add an access method here, select NodePort
       ports:
         - name: https
           port: 443
           targetPort: https
-          nodePort: 30666 # 对应 Nodeport，端口范围30000-32767
+          nodePort: 30666 # Corresponding NodePort, port range 30000-32767
           protocol: TCP
     ```
 
-5. 添加 `rbac` 的权限
+5. Add `rbac` permissions:
+
    ```shell
-   # 创建用户
+
+   # Create user
+
    kubectl create serviceaccount dashboard-admin -n pixiu-system
 
-   # 将dashboard-admin用户授cluster-admin权限（clusterrole为集群管理权限）
+   # Grant the dashboard-admin user cluster-admin permissions (clusterrole is for cluster management)
+
    kubectl create clusterrolebinding dashboard-admin-rb --clusterrole=cluster-admin --serviceaccount=pixiu-system:dashboard-admin
    ```
-6. 部署完验证
+
+6. Verify after deployment:
+
    ```shell
-   # 查看 pod 状态及暴露的端口
+
+   # Check pod status and exposed ports
+
    [root@9eavmhsbs9eghuaa ~]# kubectl get pod,svc -n pixiu-system
    NAME                                       READY   STATUS    RESTARTS   AGE
    pod/helm-toolbox-0                         1/1     Running   0          83m
@@ -59,18 +76,21 @@
    service/kubernetes-dashboard   NodePort   10.254.179.195   <none>        443:30666/TCP   66m
    ```
 
-### 访问 `dashboard`
-1. 浏览器访问：`https://<ip>:30666`
+## Access the Dashboard
 
-2. 页面访问后我们选择 token，回到终端根据下面操作获取 `token`
+1. Access via browser: `https://<ip>:30666`
 
-3. 获取 `token`
+2. After accessing the page, select token, then return to the terminal to retrieve the token as per the instructions below.
+
+3. Get the token:
+
    ```shell
-   [root@9eavmhsbs9eghuaa ~]# kubectl get secrets -n pixiu-system |grep dashboard-admin
+   [root@9eavmhsbs9eghuaa ~]# kubectl get secrets -n pixiu-system | grep dashboard-admin
    dashboard-admin-token-p8jlr    kubernetes.io/service-account-token   3      60m
    [root@9eavmhsbs9eghuaa ~]#
 
-    # 获取该 token 密钥进行登录验证
+   # Retrieve the token secret for login validation
+
    [root@9eavmhsbs9eghuaa ~]# kubectl describe secrets dashboard-admin-token-p8jlr -n pixiu-system
    Name:         dashboard-admin-token-p8jlr
    Namespace:    pixiu-system
@@ -82,6 +102,7 @@
 
    Data
    ====
+
    ca.crt:     1099 bytes
    namespace:  12 bytes
    token:      eyJhbGciOiJSUzI1NiIsImtpZCI6ImpWcDZPVXdveWh3Wk5QS014YzI4Y1hrSXgyS1JNbXhrOGQxdWVTcGxMblEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJwaXhpdS1zeXN0ZW0iLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoia3ViZXJuZXRlcy1kYXNoYm9hcmQtdG9rZW4tbHBqZzciLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoia3ViZXJuZXRlcy1kYXNoYm9hcmQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJmMjc2ZDZmYS02ZmVhLTQ5MWQtYmRlOS1kN2EzNzhiOWQwODAiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6cGl4aXUtc3lzdGVtOmt1YmVybmV0ZXMtZGFzaGJvYXJkIn0.X5M6I8NqJD92191IlSw4-9SbSAkSFF3HeeU9rbKu1rPXnGbqOB0i_pUCE_09FRzSnr1oy8ZRMOXVyUK1IX0KGTkLhqDvsrESDQBzeH9w8-H_DiTTBuS63UPr53pR1Fq7JSUyJ42EEvw71byi2nLYlULmtq7a9dwNbnALBakoGVLuRdPHtdkbmhOj-u4ZfOUfatpDtK3p6zURZFLrAtq0HssiEAE-CYpW5m5pRqm1pxeZKtxKEVB5NRwVJ5j4werj6Ijb8-qRfYLFFKSr3lbYP-Mt1NAw3LwNtBUT1BQEV2bRCwQLHD5G-P8iBHmcO6SA7cqP2mhFZjOlxWfHNqEdLA

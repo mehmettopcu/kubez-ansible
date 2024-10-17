@@ -1,35 +1,41 @@
-# 高可用集群
+# Highly Available Cluster
 
-### 依赖条件
-- [依赖安装](prerequisites.md)
+## Prerequisites
 
-### 部署步骤
-1. 检查虚拟机默认网卡配置
+- [Dependency Installation](prerequisites.md)
 
-   a. 默认网卡为 `eth0`, 如果环境实际网卡不是 `eth0`，则需要手动指定网卡名称:
-   ``` bash
-    编辑 /etc/kubez/globals.yml 文件，取消 network_interface: "eth0" 的注解，并修改为实际网卡名称
-   ```
+## Deployment Steps
 
-2. 确认集群环境连接地址
+1. Check the default network card configuration of the virtual machine
 
-   a. 内网连接:
+   a. The default network card is `eth0`. If the actual network card in the environment is not `eth0`, you need to manually specify the network card name:
+
    ```bash
-   编辑 /etc/kubez/globals.yml 文件,取消 #kube_vip_address: "172.16.50.250" 的注解,并修改为 vip 地址
+    Edit the /etc/kubez/globals.yml file, uncomment network_interface: "eth0", and change it to the actual network card name.
    ```
 
-   b. 公网地址:
-   ``` bash
-   编辑 /etc/kubez/globals.yml 文件,取消 #kube_vip_address: "172.16.50.250" 的注解,并修改为实际公网地址( LB 地址), 云平台环境需要放通公网ip到后端 master 节点的6443端口
+2. Confirm the cluster environment connection address
+
+   a. Internal connection:
+
+   ```bash
+   Edit the /etc/kubez/globals.yml file, uncomment #kube_vip_address: "172.16.50.250", and change it to the VIP address.
    ```
 
-4. 配置工作目录下的 `multinode` 配置文件, 根据实际情况添加主机信息, 并完成如下配置
+   b. Public connection:
 
-    - 配置部署节点的 `/etc/hosts`, 添加 kubernetes 节点的ip和主机名解析
-    - multinode 配置格式，推荐:
-      * 如果 cri 选择 docker，则仅需配置 [docker-master] 和 [docker-node]
-      ```shell
-      # 如果是高可用集群，则需要在 [docker-master] 添加奇数个主机名
+   ```bash
+   Edit the /etc/kubez/globals.yml file, uncomment #kube_vip_address: "172.16.50.250", and change it to the actual public address (LB address). In a cloud environment, you need to allow public IP access to the backend master node's 6443 port.
+   ```
+
+3. Configure the `multinode` configuration file in the working directory, add host information as needed, and complete the following configuration
+
+    - Configure the deployment node's `/etc/hosts`, adding the IP and hostname resolution for the Kubernetes nodes.
+    - Recommended format for multinode configuration:
+      - If CRI is Docker, configure only [docker-master] and [docker-node]:
+
+      ```toml
+      # If it is a highly available cluster, add an odd number of hostnames to [docker-master].
       [docker-master]
       kube01
       kube02
@@ -43,9 +49,11 @@
       [storage]
       kube01
       ```
-      * 如果 cri 选择 containerd，则仅需配置 [containerd-master] 和 [containerd-node]
-      ```shell
-      # 如果是高可用集群，则需要在 [containerd-master] 添加奇数个主机名
+
+      - If CRI is containerd, configure only [containerd-master] and [containerd-node]:
+
+      ```toml
+      # If it is a highly available cluster, add an odd number of hostnames to [containerd-master].
       [containerd-master]
       kube01
       kube02
@@ -60,45 +68,51 @@
       kube01
       ```
 
-5. 打通`部署节点`(运行 `kubez-ansible` 的节点) 到其他 `node` 节点的免密登陆 [批量开启免密登陆](auth-key.md) 或者 [配置密码/密钥](passwd-key.md)
+4. Enable passwordless login from the `deployment node` (the node running `kubez-ansible`) to other `node` nodes [Enable Passwordless Login in Bulk](auth-key.md) or [Configure Password/Key](passwd-key.md)
 
-6. (可选)修改 kubernetes 镜像仓库
-    ``` bash
-    编辑 /etc/kubez/globals.yml 文件，修改 image_repository: "" 为期望镜像仓库，默认是阿里云 registry.cn-hangzhou.aliyuncs.com/google_containers
-    ```
+5. (Optional) Modify the Kubernetes image repository
 
-7. (可选)修改基础应用镜像仓库
     ```bash
-    编辑 /etc/kubez/globals.yml 文件，修改 app_image_repository: "" 为期望镜像仓库，默认是 pixiu镜像仓库 harbor.cloud.pixiuio.com/pixiuio
+    Edit the /etc/kubez/globals.yml file, change image_repository: "" to the desired image repository. The default is Alibaba Cloud registry.cn-hangzhou.aliyuncs.com/google_containers.
     ```
 
-8. 执行如下命令，进行 `kubernetes` 的依赖安装
-    ``` bash
+6. (Optional) Modify the base application image repository
+
+    ```bash
+    Edit the /etc/kubez/globals.yml file, change app_image_repository: "" to the desired image repository. The default is the Pixiu image repository harbor.cloud.pixiuio.com/pixiuio.
+    ```
+
+7. Execute the following command to install the dependencies for `kubernetes`
+
+    ```bash
     kubez-ansible -i multinode bootstrap-servers
     ```
 
-9. 根据实际需要，调整配置文件 `/etc/kubez/globals.yml`
-    ```bash
-    enable_kubernetes_ha: "yes"  # 启用多控高可用, 需保证 multinode 的 control 组为奇数
-    kube_vip_address: "x.x.x.x"  # 如果是公网 LB，则填写公网 LB 地址，如果是自建高可用则填写 vip
-    enable_haproxy: "yes"        # 部署 haproxy and keepalived，如果是使用公网 LB 则不需要开启
+8. Adjust the configuration file `/etc/kubez/globals.yml` as needed
 
-    # 启用 haproxy + keepalived 时, 监听端口推荐使用 8443
+    ```bash
+    enable_kubernetes_ha: "yes"  # Enable multi-controller high availability, ensure that the control group in multinode is an odd number.
+    kube_vip_address: "x.x.x.x"  # If it is a public LB, fill in the public LB address; if it is self-built high availability, fill in the VIP.
+    enable_haproxy: "yes"        # Deploy haproxy and keepalived; if using a public LB, this does not need to be enabled.
+
+    # When enabling haproxy + keepalived, it is recommended to use port 8443 for listening.
     kube_vip_port: 6443
 
-    cluster_cidr: "172.30.0.0/16"  # pod network
-    service_cidr: "10.254.0.0/16"  # service network
+    cluster_cidr: "172.30.0.0/16"  # Pod network
+    service_cidr: "10.254.0.0/16"  # Service network
 
-    # network cni, 现支持flannel 和 calico, 默认是 flannel
+    # Network CNI, currently supports flannel and calico, default is flannel.
     enable_calico: "no"
     ```
 
-10. 执行如下命令，进行 `kubernetes` 的集群安装
-    ``` bash
+9. Execute the following command to install the `kubernetes` cluster
+
+    ```bash
     kubez-ansible -i multinode deploy
     ```
 
-11. 验证环境
+10. Verify the environment
+
    ```bash
    [root@kube01 ~]# kubectl get node
    NAME     STATUS   ROLES                  AGE     VERSION
@@ -107,7 +121,8 @@
    kube03   Ready    <none>                 3h48m   v1.23.6
    ```
 
-12. (可选)启用 kubectl 命令行补全
-    ``` bash
+11. (Optional) Enable kubectl command-line completion
+
+    ```bash
     kubez-ansible -i multinode post-deploy
     ```

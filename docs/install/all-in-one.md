@@ -1,75 +1,82 @@
-# 单节点集群
+# Single Node Cluster
 
-### 系统要求
-- `1C2G+`
+## System Requirements
 
-### 依赖条件
-- [依赖安装](prerequisites.md)
+- `1 CPU core, 2GB RAM or more`
 
-### 部署步骤
-1. 检查虚拟机默认网卡配置
-   - 默认网卡为 `eth0`, 如果环境实际网卡不是 `eth0`，则需要手动指定网卡名称:
+## Prerequisites
+
+- [Install Dependencies](prerequisites.md)
+
+## Deployment Steps
+
+1. **Check the default network interface configuration of the virtual machine**
+   - The default network interface is `eth0`. If the actual network interface in your environment is not `eth0`, you need to manually specify the correct interface name:
+
      ```bash
-     编辑 /etc/kubez/globals.yml 文件, 取消 network_interface: "eth0" 的注解, 并修改为实际网卡名称
+     Edit the file `/etc/kubez/globals.yml`, uncomment the line `network_interface: "eth0"`, and change it to the actual interface name.
      ```
 
-2. 确认集群环境连接地址
+2. **Confirm the cluster connection address**
 
-   a. 内网连接: 无需更改
+   - **Internal network connection**: No changes needed.
+   - **Public network connection**:
 
-   b. 公网连接:
-   ```bash
-   编辑 /etc/kubez/globals.yml 文件, 取消 #kube_vip_address: "" 的注解，并修改为实际公网地址 云平台环境需要放通公网ip到后面节点的6443端口
-   ```
+     ```bash
+     Edit the file `/etc/kubez/globals.yml`, uncomment the line `#kube_vip_address: ""`, and set it to the actual public IP address. Ensure that port `6443` is open to the public IP on cloud platform environments.
+     ```
 
-3. (可选) 修改默认的 `cri`
-- 默认的 `cri` 为 `containerd`, 如果期望修改为 `docker`, 则
-  - `Centos` 修改 `/usr/share/kubez-ansible/ansible/inventory/all-in-one`
-  - `Ubuntu` 修改 `/usr/local/share/kubez-ansible/ansible/inventory/all-in-one`
+3. **(Optional) Change the default Container Runtime Interface (CRI)**
+   - The default CRI is `containerd`. If you want to switch to `docker`:
+     - For `CentOS`, edit `/usr/share/kubez-ansible/ansible/inventory/all-in-one`
+     - For `Ubuntu`, edit `/usr/local/share/kubez-ansible/ansible/inventory/all-in-one`
+   - Remove the host information for `containerd-master` and `containerd-node`, and add the nodes under the `docker` group. The result should look like this:
 
-- 移除 `containerd-master` 和 `containerd-node` 的主机信息, 并添加在 `docker` 分组中, 调整后效果如下:
-  ```shell
-  [docker-master]
-  localhost       ansible_connection=local
+     ```toml
+     [docker-master]
+     localhost       ansible_connection=local
 
-  [docker-node]
-  localhost       ansible_connection=local
+     [docker-node]
+     localhost       ansible_connection=local
 
-  [containerd-master]
+     [containerd-master]
 
-  [containerd-node]
-  ```
+     [containerd-node]
+     ```
 
-4. (可选)修改 kubernetes 镜像仓库
-    ``` bash
-    编辑 /etc/kubez/globals.yml 文件，修改 image_repository: "" 为期望镜像仓库，默认是阿里云 registry.cn-hangzhou.aliyuncs.com/google_containers
+4. **(Optional) Change the Kubernetes image repository**
+
+    ```bash
+    Edit the file `/etc/kubez/globals.yml`, and modify `image_repository: ""` to the desired image repository. The default is Aliyun `registry.cn-hangzhou.aliyuncs.com/google_containers`.
     ```
 
-5. (可选)修改基础应用镜像仓库
+5. **(Optional) Change the base application image repository**
 
    ```bash
-    编辑 /etc/kubez/globals.yml 文件，修改 app_image_repository: "" 为期望镜像仓库，默认是 pixiu镜像仓库 harbor.cloud.pixiuio.com/pixiuio
-    ```
+   Edit the file `/etc/kubez/globals.yml`, and modify `app_image_repository: ""` to the desired repository. The default is Pixiu’s repository `harbor.cloud.pixiuio.com/pixiuio`.
+   
+6. **Install Kubernetes dependencies**
 
-6. 执行如下命令，进行 `kubernetes` 的依赖安装
     ```bash
     kubez-ansible bootstrap-servers
     ```
 
-7. 执行如下命令，进行 `kubernetes` 的集群安装
-    ``` bash
+7. **Deploy the Kubernetes cluster**
+
+    ```bash
     kubez-ansible deploy
     ```
 
-8. 验证环境
-   ```bash
-   # kubectl get node
-   NAME    STATUS   ROLES    AGE    VERSION
-   pixiu   Ready    master   134d   v1.23.6
-   ```
+8. **Verify the environment**
 
-9. (可选)启用 kubectl 命令行补全
-    ``` bash
-    kubez-ansible post-deploy
+    ```bash
+    kubectl get node
+    NAME    STATUS   ROLES    AGE    VERSION
+    pixiu   Ready    master   134d   v1.23.6
     ```
 
+9. **(Optional) Enable `kubectl` command-line autocompletion**
+
+    ```bash
+    kubez-ansible post-deploy
+    ```

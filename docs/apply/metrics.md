@@ -1,13 +1,16 @@
-# Metrics Server 安装
+# Metrics Server Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` 环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
+## Prerequisites
 
-### 安装 Metrics Server 组件
-1. 编辑 `/etc/kubez/globals.yml`
+- A properly functioning `kubernetes` environment. For installation manuals, refer to [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
 
-2. 配置是默认安装，如果不安装，则取消 `enable_metrics_server: "yes"` 的注释，并设置为 `"no"`
-    - 注意：安装好再设置成no，再执行第3步安装命令是无效的
+### Installing Metrics Server Components
+
+1. Edit `/etc/kubez/globals.yml`.
+
+2. The configuration is set for default installation. If you do not want to install, uncomment `enable_metrics_server: "yes"` and set it to `"no"`.
+    - Note: Setting it to "no" after installation will not be effective if the installation command is executed in step 3.
+
     ```shell
     #######################
     # Metrics Server Options
@@ -15,18 +18,20 @@
     enable_metrics_server: "yes"
     ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose according to your situation).
+
     ```shell
-    # 单节点集群场景
+    # Single node cluster scenario
     kubez-ansible apply
 
-    # 多节点&高可用集群场景
+    # Multi-node & High Availability cluster scenario
     kubez-ansible -i multinode apply
     ```
 
-4. 部署完验证
+4. Validate after deployment.
+
     ```shell
-    # 所有的 `metrics pod` 均运行正常
+    # All `metrics pods` are running normally
     [root@k8s-1 ~]# kubectl get pod -n kube-system
      NAME                                        READY   STATUS      RESTARTS   AGE
      metrics-server-v0.5.2-678db5756d-qlf7f      2/2     Running     0          22m

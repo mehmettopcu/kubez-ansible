@@ -1,14 +1,16 @@
 # Loggie
 
-## 依赖条件
-- 运行正常的 `kubernetes` ( v1.21+ )环境。安装手册参考 [高可用集群](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/multinode.md) 或 [单节点集群](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/all-in-one.md)
-- Loki
+## Prerequisites
 
-## 开启 Loggie 组件
+- A functioning `kubernetes` (v1.21+) environment. Refer to the installation manuals for [High Availability Cluster](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/multinode.md) or [Single Node Cluster](https://github.com/gopixiu-io/kubez-ansible/blob/master/docs/install/all-in-one.md).
+- Loki.
 
-1. 编辑 `/etc/kubez/globals.yml`
+## Enable Loggie Component
 
-2. 取消 `enable_loggie: "no"` 的注释，并设置为 `"yes"`，`loggie_loki_url` 配置为 `loki` 的服务端 `url`。
+1. Edit `/etc/kubez/globals.yml`.
+
+2. Uncomment `enable_loggie: "no"` and set it to `"yes"`. Configure `loggie_loki_url` to the service `url` of Loki.
+
    ```yaml
     #################
     # Loggie Options
@@ -17,24 +19,26 @@
     #loggie_namespace: "{{ kubez_namespace }}"
 
     #loggie_loki_url: http://loki-gateway/loki/api/v1/push
-    # helm 仓库配置项
+    # Helm repository configuration options
     #loggie_repo_name: "{{ default_repo_name }}"
     #loggie_repo_url: "{{ default_repo_url }}"
     #loggie_path: pixiuio/loggie
     #loggie_version: 1.4.0
    ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose according to your situation):
+
    ```yaml
-   # 单节点集群场景
+   # Single node cluster scenario
    kubez-ansible apply
 
-   # 高可用集群场景
+   # High availability cluster scenario
    kubez-ansible -i multinode apply
    ```
 
-4. 部署完验证
+4. Validate after deployment:
+
    ```shell
-    root@ubuntu:~# kubectl  get  pod  -A | grep  loggie
-    pixiu-system   loggie-g484w                                         1/1     Running     0             17h
+   root@ubuntu:~# kubectl get pod -A | grep loggie
+   pixiu-system   loggie-g484w                                         1/1     Running     0             17h
    ```

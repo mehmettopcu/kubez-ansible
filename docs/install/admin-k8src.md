@@ -1,16 +1,18 @@
-# 生成kubernetes RC 文件
+# Generate Kubernetes RC File
 
-1. 完成 `kubernetes` 的部署之后，需要导入KUBECONFIG到环境变量
-    ``` bash
-    # multinode
+1. After completing the `Kubernetes` deployment, you need to import the KUBECONFIG into the environment variables:
+
+    ```bash
+    # For multinode setup
     kubez-ansible -i multinode post-deploy
 
-    # all-in-one
+    # For all-in-one setup
     kubez-ansible post-deploy
     ```
 
-2. 验证, 得到类似回显
-    ``` bash
+2. Verify the setup with the following commands, expecting similar output:
+
+    ```bash
     . /root/admin-k8src.sh
 
     kubectl get node

@@ -1,13 +1,16 @@
-# Harbor 安装
+# Harbor Installation
 
-### 依赖条件
-- 运行正常的 `kubernetes` 环境。安装手册参考 [高可用集群](../install/multinode.md) 或 [单节点集群](../install/all-in-one.md)
-- StorageClass。
+## Prerequisites
 
-### 开启 Harbor 组件
-1. 编辑 `/etc/kubez/globals.yml`
+- A functioning `kubernetes` environment. Refer to the installation manual for [High Availability Cluster](../install/multinode.md) or [Single Node Cluster](../install/all-in-one.md).
+- StorageClass.
 
-2. 取消 `enable_harbor: "no"` 的注释，并设置为 `"yes"`
+## Enable Harbor Component
+
+1. Edit `/etc/kubez/globals.yml`.
+
+2. Uncomment `enable_harbor: "no"` and set it to `"yes"`.
+
     ```shell
     #################
     # Harbor Options
@@ -15,24 +18,26 @@
     enable_harbor: "yes"
     #harbor_name: harbor
     #harbor_namespace: "{{ kubez_namespace }}"
-    # 配置 harbor 需要使用的存储大小
+    # Configure the storage size to be used by Harbor
     harbor_storage_size: "18Gi"
-    # 配置 admin 用户的密码
+    # Configure the password for the admin user
     harbor_admin_password: "Harbor12345"
     ```
 
-3. 执行安装命令（根据实际情况选择）
+3. Execute the installation command (choose based on your scenario).
+
     ```shell
-    # 单节点集群场景
+    # Single node cluster scenario
     kubez-ansible apply
 
-    # 高可用集群场景
+    # High availability cluster scenario
     kubez-ansible -i multinode apply
     ```
 
-4. 部署完验证
+4. Verify after deployment.
+
     ```shell
-    # harbor pvc 分配成功
+    # Harbor PVC allocation successful
     [root@pixiu kubez]# kubectl get pvc -n pixiu-system
     NAME                              STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS          AGE
     data-harbor-redis-0               Bound    pvc-f5237b46-5748-4ae3-ad8c-90bab1bb0534   15Gi       RWO            managed-nfs-storage   16d
@@ -44,7 +49,7 @@
     harbor-jobservice-scandata        Bound    pvc-7e1b0a36-ff01-4fce-a43d-c6ce8de64eeb   1Gi        RWO            managed-nfs-storage   10d
     harbor-registry                   Bound    pvc-7d143c4c-c4ce-4846-bfc3-43b6f1333a51   19Gi       RWO            managed-nfs-storage   10d
 
-    # harbor pod 均运行正常
+    # All Harbor pods are running normally
     [root@pixiu kubez]# kubectl get pod -n pixiu-system
     NAME                                             READY   STATUS             RESTARTS           AGE
     harbor-chartmuseum-76ff89f9d4-nlljp              1/1     Running            0                  10d
@@ -60,5 +65,5 @@
     harbor-trivy-0                                   1/1     Running            0                  10d
     ```
 
-5. 功能验证
+5. Functionality verification
    TODO
